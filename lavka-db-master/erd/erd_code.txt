@@ -1,0 +1,61 @@
+Table products {
+  id bigserial [primary key]
+  name varchar
+  type_id integer
+  calories integer // калории
+  expiration_date timestamp // срок годности
+  created_at timestamp
+  updated_at timestamp
+} // Список товаров
+
+Table product_type {
+  id bigserial [primary key]
+  type varchar
+} // Тип товара
+
+Table assemble_points {
+  id bigserial [primary key]
+  address varchar // адрес
+  latitude decimal // геокоординаты
+  longitude decimal
+  created_at timestamp
+  updated_at timestamp
+} // Пункты сборки
+
+Table employees {
+  id bigserial [primary key]
+  firstname varchar
+  lastname varchar
+  phone varchar [null] // номер телефона
+  point_id bigint
+  created_at timestamp
+  updated_at timestamp
+} // Сотрудники
+
+Table orders_from_warehouse {
+  order_id bigserial [primary key]
+  employee_id bigint
+  status varchar [default:'To Do'] // статус заказа
+  created_at timestamp
+  done_at timestamp
+} // Заказы со склада
+
+Table products_in_assemble_point {
+  product_id bigint [primary key]
+  point_id bigint [primary key]
+  quantity integer // количество конкретного продукта в пункте
+} // Продукты в пункте сборки
+
+Table ordered_products_from_warehouse {
+  order_id bigint [primary key]
+  product_id bigint [primary key]
+  quantity integer // количество конкретно заказанного продукта
+} // Заказанные продукты со склада
+
+Ref: products.type_id > product_type.id
+Ref: employees.point_id > assemble_points.id
+Ref: orders_from_warehouse.order_id > employees.id
+Ref: products_in_assemble_point.point_id > assemble_points.id
+Ref: products_in_assemble_point.product_id > products.id
+Ref: ordered_products_from_warehouse.order_id > orders_from_warehouse.order_id
+Ref: ordered_products_from_warehouse.product_id > products.id

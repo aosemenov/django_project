@@ -1,0 +1,52 @@
+version: '2.4'
+
+services:
+  master_lavka:
+    image: postgres:13.7
+    ports:
+      - "5434:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=lavka
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=lavka
+    healthcheck:
+      test: [ "CMD-SHELL", "psql -w -U --user 999:999 content -P postgres_password -d content -c SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./volumes/master:/var/lib/postgresql/data
+
+  unit_1_lavka:
+    image: postgres:13.7
+    ports:
+      - "5435:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=lavka
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=lavka
+    healthcheck:
+      test: [ "CMD-SHELL", "psql -w -U content -P postgres_password -d content -c SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./volumes/slave_1:/var/lib/postgresql/data
+  unit_2_lavka:
+    image: postgres:13.7
+    ports:
+      - "5436:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=lavka
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=lavka
+    volumes:
+      - ./volumes/slave_2:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "psql -w -U content -P postgres_password -d content -c SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
